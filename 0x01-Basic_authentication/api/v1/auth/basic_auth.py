@@ -36,11 +36,11 @@ class BasicAuth(Auth):
         # Try to decode base64_authorization_header.
         try:
             base64_decoded = base64.b64decode(base64_authorization_header)
+            # Decode decoded bytes to utf-8.
+            base64_string = base64_decoded.decode('utf-8')
         except Exception:
             # If decoding fails, return None.
             return None
-        # Decode decoded bytes to utf-8.
-        base64_string = base64_decoded.decode('utf-8')
         # Return base64_string.
         return base64_string
 
@@ -87,3 +87,26 @@ class BasicAuth(Auth):
             return None
         # Return user.
         return user[0]
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """ Get current user. """
+        # Check for authorization header
+        auth_h = self.authorization_header(request)
+        if not auth_h:
+            return None
+        # Extract Base64 authorization header
+        base64_auth_h = self.extract_base64_authorization_header(auth_h)
+        if not base64_auth_h:
+            return None
+        # Decode Base64 authorization header
+        decoded_header = self.decode_base64_authorization_header(base64_auth_h)
+        if not decoded_header:
+            return None
+        # Extract user credentials
+        user = self.extract_user_credentials(decoded_header)
+        if not user[0] or not user[1]:
+            return None
+        username = user[0]
+        password = user[1]
+        # Get user from database and return
+        return self.user_object_from_credentials(username, password)
