@@ -18,8 +18,14 @@ class Auth:
         # Handle excluded_paths ending with *.
         for excluded in excluded_paths:
             # If excluded ends with *.
-            if excluded.endswith('*/'):
+            if excluded.endswith('*'):
                 # Remove * from excluded.
+                excluded_prefix = excluded[:-1]
+                # Check if path starts with excluded up to the *.
+                if path.startswith(excluded_prefix):
+                    return False
+            elif excluded.endswith('*/'):
+                # Remove */ from excluded.
                 excluded_prefix = excluded[:-2]
                 # Check if path starts with excluded up to the *.
                 if path.startswith(excluded_prefix):
