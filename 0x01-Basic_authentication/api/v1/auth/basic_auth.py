@@ -56,11 +56,13 @@ class BasicAuth(Auth):
             return (None, None)
         # Check if decoded_base64_authorization_header does not contain :.
         try:
-            # Split decoded_base64_authorization_header by :.
-            username, password = decoded_base64_authorization_header.split(':')
+            colon_index = decoded_base64_authorization_header.index(':')
         except Exception:
-            # If split fails, return None.
+            # If no colon is found, return None.
             return (None, None)
+        # Get username and password from decoded_base64_authorization_header.
+        username = decoded_base64_authorization_header[:colon_index]
+        password = decoded_base64_authorization_header[colon_index + 1:]
         # Return username and password as a tuple.
         return (username, password)
 
