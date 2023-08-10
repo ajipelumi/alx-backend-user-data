@@ -60,18 +60,15 @@ def before_request_func() -> str:
     # Check if path is excluded. If so, return.
     if not auth.require_auth(request.path, excluded_paths):
         return
-    # Check if auth header is None. If so, abort with 401.
-    if auth.authorization_header(request) is None:
+    # Check if auth header is None and session cookie is None.
+    if auth.authorization_header(request) is None and \
+            auth.session_cookie(request) is None:
         abort(401)
     # Check if current user is None. If so, abort with 403.
     if auth.current_user(request) is None:
         abort(403)
     # Assign current user to request.current_user.
     request.current_user = auth.current_user(request)
-    # Check if auth header is None and session cookie is None.
-    if auth.authorization_header(request) is None and \
-            auth.session_cookie(request) is None:
-        abort(401)
 
 
 if __name__ == "__main__":
