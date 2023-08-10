@@ -62,6 +62,8 @@ def before_request_func() -> str:
     # Check if current user is None. If so, abort with 403.
     if auth.current_user(request) is None:
         abort(403)
+    # Assign current user to request.current_user.
+    request.current_user = auth.current_user(request)
 
 
 if __name__ == "__main__":
