@@ -61,3 +61,4 @@ class SessionAuth(Auth):
             return False
         # Delete user_id from user_id_by_session_id.
         del self.user_id_by_session_id[cookie_value]
+        return True

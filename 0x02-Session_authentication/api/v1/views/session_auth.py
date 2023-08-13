@@ -38,19 +38,14 @@ def login() -> str:
     return response
 
 
-@app_views.route('/auth_session/logout',
-                 methods=['DELETE'], strict_slashes=False)
-def delete() -> str:
+@app_views.route('/auth_session/logout', methods=['DELETE'],
+                    strict_slashes=False)
+def logout() -> str:
     """ DELETE /api/v1/auth_session/logout
     Return:
-        - Empty JSON dictionary with the status code 200
+      - Empty JSON
     """
-    # Import auth.
     from api.v1.app import auth
-    # Destroy session.
-    destroy_session = auth.destroy_session(request)
-    # Check if session is destroyed.
-    if not destroy_session:
+    if not auth.destroy_session(request):
         abort(404)
-    # Return an empty dictionary.
     return jsonify({}), 200
