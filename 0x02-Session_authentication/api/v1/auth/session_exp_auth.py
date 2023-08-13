@@ -42,22 +42,23 @@ def user_id_for_session_id(self, session_id: str = None) -> str:
     if session_id is None:
         return None
     # Check if user_id_by_session_id has session_id.
-    if session_id not in self.user_id_by_session_id:
+    session_data = self.user_id_by_session_id.get(session_id)
+    if session_data is None:
         return None
-    # Check if session_duration is equal or less than 0.
+
+    user_id = session_data.get("user_id")
+    created_at = session_data.get("created_at")
+
+    # Check if session duration is less than or equal to 0.
     if self.session_duration <= 0:
-        return self.user_id_by_session_id.get(session_id).get("user_id")
-    # Check if session_duration contains the created_at key.
-    if "created_at" not in self.user_id_by_session_id.get(session_id):
+        return user_id
+    # Check if created_at exists.
+    if created_at is None:
         return None
-    # Get current time.
-    current_time = datetime.now()
-    # Get session time.
-    session_time = self.user_id_by_session_id.get(session_id).get("created_at")
-    # Get expiration time.
-    expiration_time = session_time + timedelta(seconds=self.session_duration)
+
+    expiration_time = created_at + timedelta(seconds=self.session_duration)
     # Check if user session is expired.
-    if expiration_time < current_time:
+    if expiration_time < datetime.now():
         return None
     # Return user_id.
-    return self.user_id_by_session_id.get(session_id).get("user_id")
+    return user_id
