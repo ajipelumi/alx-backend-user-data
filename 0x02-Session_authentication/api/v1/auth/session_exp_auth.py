@@ -35,30 +35,29 @@ class SessionExpAuth(SessionAuth):
         # Return session_id.
         return session_id
 
+    def user_id_for_session_id(self, session_id: str = None) -> str:
+        """ User ID for session ID. """
+        # Check if session_id is None.
+        if session_id is None:
+            return None
+        # Check if user_id_by_session_id has session_id.
+        session_data = self.user_id_by_session_id.get(session_id)
+        if session_data is None:
+            return None
 
-def user_id_for_session_id(self, session_id: str = None) -> str:
-    """ User ID for session ID. """
-    # Check if session_id is None.
-    if session_id is None:
-        return None
-    # Check if user_id_by_session_id has session_id.
-    session_data = self.user_id_by_session_id.get(session_id)
-    if session_data is None:
-        return None
+        user_id = session_data.get("user_id")
+        created_at = session_data.get("created_at")
 
-    user_id = session_data.user_id
-    created_at = session_data.created_at
+        # Check if session duration is less than or equal to 0.
+        if self.session_duration <= 0:
+            return user_id
+        # Check if created_at exists.
+        if created_at is None:
+            return None
 
-    # Check if session duration is less than or equal to 0.
-    if self.session_duration <= 0:
+        expiration_time = created_at + timedelta(seconds=self.session_duration)
+        # Check if user session is expired.
+        if expiration_time < datetime.now():
+            return None
+        # Return user_id.
         return user_id
-    # Check if created_at exists.
-    if created_at is None:
-        return None
-
-    expiration_time = created_at + timedelta(seconds=self.session_duration)
-    # Check if user session is expired.
-    if expiration_time < datetime.now():
-        return None
-    # Return user_id.
-    return user_id
