@@ -46,8 +46,8 @@ def user_id_for_session_id(self, session_id: str = None) -> str:
     if session_data is None:
         return None
 
-    user_id = session_data.get("user_id")
-    created_at = session_data.get("created_at")
+    user_id = session_data.user_id
+    created_at = session_data.created_at
 
     # Check if session duration is less than or equal to 0.
     if self.session_duration <= 0:
