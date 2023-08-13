@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ Module of Session Authentication views. """
 from api.v1.views import app_views
-from flask import jsonify, request
+from flask import abort, jsonify, request
 from models.user import User
 from os import getenv
 
@@ -36,3 +36,21 @@ def login() -> str:
     response = jsonify(user[0].to_json())
     response.set_cookie(cookie_name, session_id)
     return response
+
+
+@app_views.route('/auth_session/logout',
+                 methods=['DELETE'], strict_slashes=False)
+def delete() -> str:
+    """ DELETE /api/v1/auth_session/logout
+    Return:
+        - Empty JSON dictionary with the status code 200
+    """
+    # Import auth.
+    from api.v1.app import auth
+    # Destroy session.
+    destroy_session = auth.destroy_session(request)
+    # Check if session is destroyed.
+    if not destroy_session:
+        abort(404)
+    # Return an empty dictionary.
+    return jsonify({}), 200
