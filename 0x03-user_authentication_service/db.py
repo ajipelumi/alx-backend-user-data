@@ -46,3 +46,18 @@ class DB:
             raise NoResultFound
         # Return user
         return user
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """ Update a user instance. """
+        # Check if kwargs are valid columns
+        for key in kwargs.keys():
+            if not hasattr(User, key):
+                raise ValueError
+        # Query for user
+        user = self.find_user_by(id=user_id)
+        # Update user
+        for key, value in kwargs.items():
+            setattr(user, key, value)
+        self._session.commit()
+        # Return None
+        return None
