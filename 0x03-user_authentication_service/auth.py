@@ -69,6 +69,20 @@ class Auth:
         self._db.update_user(user_id, session_id=None)
         return None
 
+    def get_reset_password_token(self, email: str) -> str:
+        """ Returns a reset password token if it exists. """
+        # Find the user by email
+        try:
+            user = self._db.find_user_by(email=email)
+        except NoResultFound:
+            raise ValueError
+        # Create a new reset_token
+        reset_token = _generate_uuid()
+        # Update the user's reset_token field with the new reset_token
+        self._db.update_user(user.id, reset_token=reset_token)
+        # Return the new reset_token
+        return reset_token
+
 
 def _hash_password(password: str) -> bytes:
     """ Returns a salted hash of the input password. """
